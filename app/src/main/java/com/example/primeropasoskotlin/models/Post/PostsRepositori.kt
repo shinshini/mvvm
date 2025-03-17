@@ -32,7 +32,7 @@ class PostsRepositori(context: Context) {
 
     }
     fun patchPost(id: Int, posts: Posts, callback: (Posts) -> Unit,errorCallback: (Throwable) -> Unit){
-        apiService.patchPost(id,posts).enqueue(object :Callback<Posts>{
+        apiService.putPost(id,posts).enqueue(object :Callback<Posts>{
             override fun onResponse(call: Call<Posts>, response: Response<Posts>) {
                 if(response.isSuccessful){
                     callback(response.body()!!)

@@ -7,6 +7,7 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.PATCH
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface ApiService {
@@ -17,8 +18,8 @@ interface ApiService {
     fun getFecha():Call<List<String>>
 
     // Actualizar un post parcialmente
-    @PATCH("posts/{id}")
-    fun patchPost(@Path("id") id: Int, @Body post: Posts): Call<Posts>
+    @PUT("posts/{id}")
+    fun putPost(@Path("id") id: Int, @Body post: Posts): Call<Posts>
 
     // Eliminar un post
    @DELETE("posts/{id}")
