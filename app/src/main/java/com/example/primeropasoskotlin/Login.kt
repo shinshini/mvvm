@@ -41,10 +41,9 @@ class Login : AppCompatActivity() {
 
         getEditar()
          val nuevopost =Posts(12, 1,  "alan" ,  "santiago segundo")
-        postViewModel.getEditar(2,nuevopost)
+        postViewModel.getEditar(nuevopost.id,nuevopost)
 
         getDelete()
-        val newpost =Posts(12, 1,  "aasassas" ,  "sadasdas")
         postViewModel.getEliminar(1)
         //cargarVolley()
     }

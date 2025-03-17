@@ -7,7 +7,7 @@ import com.example.primeropasoskotlin.models.Post.PostsDao
 import com.example.primeropasoskotlin.models.Post.PostsRepositori
 import com.example.primeropasoskotlin.models.Posts
 
-class PostViewModel(aplication:Application):AndroidViewModel(aplication) {
+class PostViewModel(application:Application):AndroidViewModel(application) {
 
     private val postsDao:PostsDao
 
@@ -19,7 +19,7 @@ class PostViewModel(aplication:Application):AndroidViewModel(aplication) {
     val eliminar : LiveData<Boolean>get()=postsDao.elim
 
     init {
-        val postsRepositori = PostsRepositori(aplication)
+        val postsRepositori = PostsRepositori(application)
         postsDao = PostsDao(postsRepositori)
     }
 
@@ -28,7 +28,7 @@ class PostViewModel(aplication:Application):AndroidViewModel(aplication) {
     }
 
     fun getEditar(id:Int,posts: Posts){
-        postsDao.geteditas(posts.id, posts )
+        postsDao.geteditas(id, posts )
     }
 
     fun getEliminar(id:Int){

@@ -28,7 +28,7 @@ class PostsDao(private val postRepositori: PostsRepositori) {
     }
     fun geteditas(id: Int,posts: Posts){
         postRepositori.patchPost(
-           posts.id ,
+           id,
             posts = posts,
             callback = { _editar.value=true },
             errorCallback = {_editar.value=false }
