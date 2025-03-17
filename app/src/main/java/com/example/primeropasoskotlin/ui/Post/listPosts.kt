@@ -13,6 +13,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.primeropasoskotlin.R
 import com.example.primeropasoskotlin.adapter.PostsAdapter
 import com.example.primeropasoskotlin.models.Posts
+import com.example.primeropasoskotlin.models.services.ApiClient
+import com.example.primeropasoskotlin.models.services.ApiService
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class listPosts : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
@@ -50,30 +55,50 @@ class listPosts : AppCompatActivity() {
 
         // Crear el cuadro de diálogo
         val builder = AlertDialog.Builder(this)
-            .setTitle("editar textos")
+            .setTitle("Editar Post")
             .setView(dialogView)
-            .setPositiveButton("Guardar cambios") { dialog, _ ->
+            .setPositiveButton("Guardar") { dialog, _ ->
                 // Obtener los valores editados
                 val newTitle = titleEditText.text.toString()
                 val newBody = bodyEditText.text.toString()
 
                 // Validar los campos antes de actualizar
                 if (newTitle.isNotBlank() && newBody.isNotBlank()) {
-                    // Actualizar el objeto Post
+                    // Actualizar el objeto Post local
                     post.title = newTitle
                     post.body = newBody
 
-                    // Notificar al adaptador para actualizar la vista
-                    adapter.notifyDataSetChanged()
+                    // Llamar a la API para actualizar el post
+                    ApiClient.instance.putPost(post.id, post)
+                        .enqueue(object : Callback<Posts> {
+                            override fun onResponse(call: Call<Posts>, response: Response<Posts>) {
+                                if (response.isSuccessful) {
+                                    // Notificar al adaptador para actualizar la vista
+                                    adapter.notifyDataSetChanged()
+
+                                    // Mostrar un Toast para confirmar que el post fue actualizado
+                                    Toast.makeText(this@listPosts, "Post actualizado", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    // Manejo de errores si la actualización falla
+                                    Toast.makeText(this@listPosts, "Error al actualizar el post", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+
+                            override fun onFailure(call: Call<Posts>, t: Throwable) {
+                                // Manejo de errores en caso de fallo de la solicitud
+                                Toast.makeText(this@listPosts, "Error en la conexión", Toast.LENGTH_SHORT).show()
+                            }
+                        })
                 } else {
-                    Toast.makeText(this, "Por favor, complete todos los campos", Toast.LENGTH_SHORT).show()
+                    // Validar si los campos están vacíos
+                    Toast.makeText(this@listPosts, "Por favor, complete todos los campos", Toast.LENGTH_SHORT).show()
                 }
 
                 // Cerrar el diálogo
                 dialog.dismiss()
             }
-            .setNegativeButton("cancelar") { dialog, _ ->
-                // Cerrar el diálogo sin hacer cambios
+            .setNegativeButton("Cancelar") { dialog, _ ->
+                // Cerrar el diálogo sin hacer nada
                 dialog.dismiss()
             }
 
@@ -107,6 +132,6 @@ class listPosts : AppCompatActivity() {
         // Mostrar el cuadro de diálogo de confirmación
         builder.show()
     }
-    
+
 
 }
