@@ -1,6 +1,7 @@
 package com.example.primeropasoskotlin.ui.Post
 
 import android.os.Bundle
+import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -20,6 +21,9 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class listPosts : AppCompatActivity() {
+
+    lateinit var add:Button
+
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: PostsAdapter
     private val postsList = mutableListOf<Posts>()
@@ -43,94 +47,94 @@ class listPosts : AppCompatActivity() {
         adapter = PostsAdapter(postsList, this)
         recyclerView.adapter = adapter
     }
+    // Función para editar el post al hacer clic en el botón "Editar"
     fun onEditClick(post: Posts) {
-        // Inflar el diseño del cuadro de diálogo
+        val position = postsList.indexOfFirst { it.id == post.id }
+        if (position != -1) {
+            AlertDialog.Builder(this).apply {
+                setTitle("Editar Post")
+                val dialogView = layoutInflater.inflate(R.layout.editar_texto, null)
+                val titleEditText = dialogView.findViewById<EditText>(R.id.editTextTitle)
+                val bodyEditText = dialogView.findViewById<EditText>(R.id.editTextBody)
+
+                titleEditText.setText(post.title)
+                bodyEditText.setText(post.body)
+
+                setView(dialogView)
+                setPositiveButton("Guardar") { _, _ ->
+                    val newTitle = titleEditText.text.toString().trim()
+                    val newBody = bodyEditText.text.toString().trim()
+
+                    if (newTitle.isNotEmpty() && newBody.isNotEmpty()) {
+                        postsList[position] = post.copy(title = newTitle, body = newBody)
+                        adapter.notifyItemChanged(position) // Actualiza solo el ítem modificado
+                    } else {
+                        Toast.makeText(
+                            this@listPosts,
+                            "Por favor, complete todos los campos",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+                setNegativeButton("Cancelar") { dialog, _ -> dialog.dismiss() }
+                show()
+            }
+        }
+    }
+
+    fun onDeleteClick(post: Posts) {
+        val position = postsList.indexOfFirst { it.id == post.id }
+        if (position != -1) {
+            AlertDialog.Builder(this)
+                .setTitle("Eliminar Post")
+                .setMessage("¿Estás seguro de que deseas eliminar este post?")
+                .setPositiveButton("Eliminar") { _, _ ->
+                    postsList.removeAt(position)
+                    adapter.notifyItemRemoved(position)
+                    adapter.notifyItemRangeChanged(position, postsList.size) // Ajusta posiciones en RecyclerView
+                }
+                .setNegativeButton("Cancelar") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
+        }
+        }
+    fun onAddClick() {
+        // Inflar el diseño del cuadro de diálogo para agregar un nuevo post
         val dialogView = layoutInflater.inflate(R.layout.editar_texto, null)
         val titleEditText = dialogView.findViewById<EditText>(R.id.editTextTitle)
         val bodyEditText = dialogView.findViewById<EditText>(R.id.editTextBody)
 
-        // Establecer los valores actuales del post en los campos de texto
-        titleEditText.setText(post.title)
-        bodyEditText.setText(post.body)
-
-        // Crear el cuadro de diálogo
-        val builder = AlertDialog.Builder(this)
-            .setTitle("Editar Post")
+        AlertDialog.Builder(this)
+            .setTitle("Agregar Nuevo Post")
             .setView(dialogView)
-            .setPositiveButton("Guardar") { dialog, _ ->
-                // Obtener los valores editados
-                val newTitle = titleEditText.text.toString()
-                val newBody = bodyEditText.text.toString()
+            .setPositiveButton("Agregar") { _, _ ->
+                val newTitle = titleEditText.text.toString().trim()
+                val newBody = bodyEditText.text.toString().trim()
 
-                // Validar los campos antes de actualizar
-                if (newTitle.isNotBlank() && newBody.isNotBlank()) {
-                    // Actualizar el objeto Post local
-                    post.title = newTitle
-                    post.body = newBody
+                if (newTitle.isNotEmpty() && newBody.isNotEmpty()) {
+                    // Crear un nuevo post
+                    val newPost = Posts(postsList.size + 1, postsList.size + 1, newTitle, newBody)
 
-                    // Llamar a la API para actualizar el post
-                    ApiClient.instance.putPost(post.id, post)
-                        .enqueue(object : Callback<Posts> {
-                            override fun onResponse(call: Call<Posts>, response: Response<Posts>) {
-                                if (response.isSuccessful) {
-                                    // Notificar al adaptador para actualizar la vista
-                                    adapter.notifyDataSetChanged()
+                    // Agregar el nuevo post a la lista
+                    postsList.add(newPost)
 
-                                    // Mostrar un Toast para confirmar que el post fue actualizado
-                                    Toast.makeText(this@listPosts, "Post actualizado", Toast.LENGTH_SHORT).show()
-                                } else {
-                                    // Manejo de errores si la actualización falla
-                                    Toast.makeText(this@listPosts, "Error al actualizar el post", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-
-                            override fun onFailure(call: Call<Posts>, t: Throwable) {
-                                // Manejo de errores en caso de fallo de la solicitud
-                                Toast.makeText(this@listPosts, "Error en la conexión", Toast.LENGTH_SHORT).show()
-                            }
-                        })
+                    // Notificar al adaptador para actualizar el RecyclerView
+                    adapter.notifyItemInserted(postsList.size - 1)
                 } else {
-                    // Validar si los campos están vacíos
-                    Toast.makeText(this@listPosts, "Por favor, complete todos los campos", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Por favor, complete todos los campos", Toast.LENGTH_SHORT).show()
                 }
-
-                // Cerrar el diálogo
-                dialog.dismiss()
             }
             .setNegativeButton("Cancelar") { dialog, _ ->
-                // Cerrar el diálogo sin hacer nada
                 dialog.dismiss()
             }
-
-        // Mostrar el cuadro de diálogo
-        builder.show()
+            .show()
     }
+    fun cargar(){
+        add=findViewById(R.id.button2)
+    }
+    fun estados(){
 
-
-    fun onDeleteClick(post: Posts) {
-        val builder = AlertDialog.Builder(this)
-            .setTitle("Eliminar Post")
-            .setMessage("¿Estás seguro de que deseas eliminar este post?")
-            .setPositiveButton("Eliminar") { dialog, _ ->
-                // Eliminar el post de la lista
-                postsList.remove(post)
-
-                // Notificar al adaptador para actualizar la vista
-                adapter.notifyDataSetChanged()
-
-                // Mostrar un Toast para confirmar que el post fue eliminado
-                Toast.makeText(this, "Post eliminado", Toast.LENGTH_SHORT).show()
-
-                // Cerrar el diálogo
-                dialog.dismiss()
-            }
-            .setNegativeButton("Cancelar") { dialog, _ ->
-                // Cerrar el diálogo sin hacer nada
-                dialog.dismiss()
-            }
-
-        // Mostrar el cuadro de diálogo de confirmación
-        builder.show()
     }
 
 

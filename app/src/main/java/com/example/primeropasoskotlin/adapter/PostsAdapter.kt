@@ -16,6 +16,7 @@ class PostsAdapter(private val postList: List<Posts>, private val listener: list
     interface  OnItemClickListener{
         fun onEditClick (posts: Posts)
         fun omDeleteClick (posts: Posts)
+        fun onAddClick()
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostsAdapter.ViewHolder {
        val view = LayoutInflater.from(parent.context).inflate(R.layout.component_list_post, parent, false)
@@ -26,6 +27,7 @@ class PostsAdapter(private val postList: List<Posts>, private val listener: list
         val body: TextView = view.findViewById(R.id.textBody)
         val editButton: Button = view.findViewById(R.id.buttonEdit)
         val deleteButton: Button = view.findViewById(R.id.buttonDelete)
+
 
     }
 
