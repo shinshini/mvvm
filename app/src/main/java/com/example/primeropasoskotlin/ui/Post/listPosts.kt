@@ -22,7 +22,7 @@ import retrofit2.Response
 
 class listPosts : AppCompatActivity() {
 
-    lateinit var add:Button
+    private lateinit var add:Button
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: PostsAdapter
@@ -37,6 +37,8 @@ class listPosts : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        add=findViewById(R.id.button2)
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -46,6 +48,8 @@ class listPosts : AppCompatActivity() {
 
         adapter = PostsAdapter(postsList, this)
         recyclerView.adapter = adapter
+
+        onAddClick()
     }
     // Función para editar el post al hacer clic en el botón "Editar"
     fun onEditClick(post: Posts) {
@@ -100,6 +104,7 @@ class listPosts : AppCompatActivity() {
         }
         }
     fun onAddClick() {
+        add.setOnClickListener {
         // Inflar el diseño del cuadro de diálogo para agregar un nuevo post
         val dialogView = layoutInflater.inflate(R.layout.editar_texto, null)
         val titleEditText = dialogView.findViewById<EditText>(R.id.editTextTitle)
@@ -122,7 +127,8 @@ class listPosts : AppCompatActivity() {
                     // Notificar al adaptador para actualizar el RecyclerView
                     adapter.notifyItemInserted(postsList.size - 1)
                 } else {
-                    Toast.makeText(this, "Por favor, complete todos los campos", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Por favor, complete todos los campos", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
             .setNegativeButton("Cancelar") { dialog, _ ->
@@ -130,12 +136,7 @@ class listPosts : AppCompatActivity() {
             }
             .show()
     }
-    fun cargar(){
-        add=findViewById(R.id.button2)
-    }
-    fun estados(){
-
+       }
     }
 
 
-}
