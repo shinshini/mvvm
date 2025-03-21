@@ -38,7 +38,7 @@ class listPosts : AppCompatActivity() {
             insets
         }
 
-        botonAdicionar = findViewById(R.id.button2)
+        botonAdicionar = findViewById(R.id.btnAdicionar)
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -66,8 +66,8 @@ class listPosts : AppCompatActivity() {
             .setTitle("Editar Post")
             .setView(dialogView)
             .setPositiveButton("Guardar") { _, _ ->
-                val title = dialogView.findViewById<EditText>(R.id.editTextTitle).text.toString().trim()
-                val body = dialogView.findViewById<EditText>(R.id.editTextBody).text.toString().trim()
+                val title = dialogView.findViewById<EditText>(R.id.editTextTitle).text.toString()
+                val body = dialogView.findViewById<EditText>(R.id.editTextBody).text.toString()
                 if (title.isNotEmpty() && body.isNotEmpty()) {
                     postsList[position] = post.copy(title = title, body = body)
                     adapter.notifyItemChanged(position)
@@ -101,8 +101,8 @@ class listPosts : AppCompatActivity() {
                 .setTitle("Agregar Nuevo Post")
                 .setView(view)
                 .setPositiveButton("Agregar") { _, _ ->
-                    val title = view.findViewById<EditText>(R.id.editTextTitle).text.toString().trim()
-                    val body = view.findViewById<EditText>(R.id.editTextBody).text.toString().trim()
+                    val title = view.findViewById<EditText>(R.id.editTextTitle).text.toString()
+                    val body = view.findViewById<EditText>(R.id.editTextBody).text.toString()
                     if (title.isNotEmpty() && body.isNotEmpty()) {
                         postsList.add(Posts(postsList.size + 1, postsList.size + 1, title, body))
                         adapter.notifyItemInserted(postsList.size - 1)
